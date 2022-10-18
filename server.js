@@ -1,14 +1,15 @@
 const express = require('express');
-const path = require('path');
-const notes = require('./db/db.json');
 const fs = require('fs');
+const path = require('path');
+const uuid = require('./helpers/uuid.js');
+const noteData = require('./db/db.json');
+
 
 const app = express();
-
 const PORT = 3001;
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use(express.static('public'));
 
@@ -25,20 +26,41 @@ app.get('/notes', (req, res)  => {
 })
 
 app.get('/api/notes', (req, res) => {
-  return res.json(notes)
+  return res.json(noteData)
   
 })
 
 app.post('/api/notes', (req, res) => {
-  const newNote = req.body;
+  const {title, text} = req.body;
 
-  notes.push(newNote);
-  return res.json(notes)
+    const newNote = {
+      title,
+      text,
+      id: uuid(),
+    }
+  
+    // const noteString = JSON.stringify(newNote)
+    
+  //   fs.writeFile(`./db/db.json`, noteString, (err) =>
+  //     err
+  //       ? console.error(err)
+  //       :console.log('error')
+  //       )
+
+  
+  
+  noteData.push(newNote);
+
+  res.json(noteData)
 })
 
 
 
-
+app.delete('./api/notes/:id', (req, res) => {
+  const remove = req.params.id
+  res.json(notes)
+  }
+)
 
 
 
